@@ -555,20 +555,19 @@ def main():
                 complaints_detail['date'] == complaints_detail['date'].max()
             ].copy()
             total_latest = latest_complaints['volume'].sum()
-            cat_colors = [
-                "#C0392B", "#E67E22", "#F39C12", "#2980B9", "#8E44AD"
-            ]
-            for (_, row), color in zip(latest_complaints.iterrows(), cat_colors):
+            # Single-hue bars — avoids colour confusion with the team tags in the adjacent column
+            bar_color = "#5D6D7E"
+            for _, row in latest_complaints.iterrows():
                 pct = row['volume'] / total_latest * 100 if total_latest > 0 else 0
                 st.markdown(
                     f"<div style='margin-bottom:8px;'>"
                     f"<div style='display:flex;justify-content:space-between;"
                     f"font-size:0.83em;margin-bottom:3px;'>"
                     f"<span>{row['category']}</span>"
-                    f"<span style='color:{color};font-weight:bold;'>{pct:.0f}%</span>"
+                    f"<span style='color:{bar_color};font-weight:bold;'>{pct:.0f}%</span>"
                     f"</div>"
                     f"<div style='background:#f0f0f0;border-radius:4px;height:10px;'>"
-                    f"<div style='background:{color};width:{pct:.0f}%;height:10px;border-radius:4px;'></div>"
+                    f"<div style='background:{bar_color};width:{pct:.0f}%;height:10px;border-radius:4px;'></div>"
                     f"</div></div>",
                     unsafe_allow_html=True
                 )
