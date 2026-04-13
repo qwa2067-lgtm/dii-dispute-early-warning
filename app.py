@@ -270,9 +270,15 @@ def main():
             "**Who this is for:** This is a cross-functional tool. Each tab is designed to be read "
             "by actuaries, risk managers, operations teams, and legal counsel — without requiring "
             "specialised actuarial knowledge to understand the signal.\n\n"
-            "**Data:** APRA dispute and claims data is real (public domain, Creative Commons CC BY 3.0 AU). "
-            "The complaints series is synthetic — constructed to demonstrate the methodology. "
-            "Any insurer can substitute their own complaints data.\n\n"
+            "**Data sources:** APRA publishes life insurance claims and disputes statistics as open data "
+            "— free to use with attribution under a Creative Commons licence (CC BY 3.0 AU). "
+            "This means the dispute rates, claims volumes, and product comparisons shown here are "
+            "drawn directly from the official APRA publication. "
+            "The internal complaints series does not exist as public data — it is held by each insurer "
+            "and is not disclosed. For this tool, it has been synthetically constructed to demonstrate "
+            "the methodology. Any insurer can substitute their own complaints data to run the same analysis. "
+            "Throughout the tool, APRA data is marked with a green **APRA DATA** badge and constructed "
+            "data with a yellow **CONSTRUCTED DATA** badge.\n\n"
             "*Built by Amy Wang (FIAA).*"
         )
 
@@ -365,28 +371,41 @@ def main():
         with col_context:
             st.markdown("**Why the Non-Advised channel has higher dispute rates**")
             st.markdown(
+                "<div style='font-size:0.83em;color:#888;margin-bottom:8px;font-style:italic;'>"
+                "Factors cited in ASIC's August 2025 Dear CEO letter and AFCA annual reports on "
+                "life insurance complaints. Not ranked — APRA data does not disclose root cause.</div>",
+                unsafe_allow_html=True
+            )
+            st.markdown(
                 "<div style='font-size:0.85em;line-height:1.7;'>"
                 "<div style='margin-bottom:8px;'><strong>No advice at point of sale.</strong> "
                 "Customers self-select into DII without a financial adviser assessing suitability. "
                 "When a claim is declined, there is no adviser to help interpret the policy terms — "
                 "the customer goes directly to AFCA.</div>"
-                "<div style='margin-bottom:8px;'><strong>Anti-selection.</strong> "
-                "Customers who seek out income protection without advice often have a higher "
-                "subjective sense of their own claim likelihood — increasing the likelihood "
-                "of disputes when expectations are not met.</div>"
-                "<div><strong>Weaker needs-matching.</strong> "
-                "Direct-sold policies may not align to the customer's actual occupation or "
-                "income, creating definitional mismatches at claim time.</div>"
+                "<div style='margin-bottom:8px;'><strong>Anti-selection risk.</strong> "
+                "Without adviser-led needs assessment, the direct channel may attract customers "
+                "whose circumstances are a higher mismatch to the product — increasing the "
+                "likelihood of disputes when expectations are not met at claim time.</div>"
+                "<div><strong>Policy definition complexity.</strong> "
+                "ASIC's review found that policy terms — particularly 'unable to work' definitions "
+                "in DII — are frequently misunderstood by customers at point of sale, creating "
+                "definitional disputes at claim time.</div>"
                 "</div>",
                 unsafe_allow_html=True
             )
 
         st.markdown("---")
-        st.markdown("**How does DII compare to other products? (June 2025)**")
+        st.markdown(
+            f"**How does DII compare to other products? (June 2025)** {real_badge()}",
+            unsafe_allow_html=True
+        )
         st.markdown(
             "<div style='font-size:0.82em;color:#666;margin-bottom:12px;'>"
             "Dispute lodgement ratio = disputes lodged per 100,000 lives insured. "
-            "Individual Non-Advised channel only.</div>",
+            "<strong>Individual Non-Advised (direct sales) channel only</strong> — "
+            "this is not a comparison of all channels combined. "
+            "Rates in the advised channel are materially lower for most products. "
+            "Source: APRA Life Insurance Claims and Disputes Statistics, June 2025.</div>",
             unsafe_allow_html=True
         )
 
@@ -521,7 +540,9 @@ def main():
             )
             st.markdown(
                 "<div style='font-size:0.8em;color:#666;margin-bottom:10px;'>"
-                "Constructed category breakdown — based on AFCA complaint data for life insurance DII. "
+                "Category weights are constructed assumptions — estimated from AFCA's published "
+                "complaint category data for life insurance. AFCA does not publish DII-specific "
+                "category splits by channel, so these weights are illustrative. "
                 "An insurer with real complaints data would see their own breakdown here.</div>",
                 unsafe_allow_html=True
             )
@@ -680,6 +701,31 @@ def main():
             "per 1,000 DII claims received._"
         )
 
+        st.markdown(
+            "<div style='background:#F8F9FA;border:1px solid #dee2e6;border-radius:6px;"
+            "padding:14px 16px;margin-bottom:16px;font-size:0.83em;line-height:1.7;'>"
+            "<strong>Calculator assumptions and data sources</strong><br>"
+            "<table style='width:100%;border-collapse:collapse;margin-top:8px;'>"
+            "<tr><td style='width:40%;color:#555;padding:2px 0;'><strong>Decline rate default (12%)</strong></td>"
+            "<td style='color:#444;'>APRA claims data, DII Non-Advised, Jun 2025: ~11.5% of claims received were declined. "
+            "Rounded to 12% as base. <span style='color:#155724;font-weight:bold;'>APRA DATA</span></td></tr>"
+            "<tr><td style='color:#555;padding:2px 0;'><strong>Dispute rate default (40%)</strong></td>"
+            "<td style='color:#444;'>Estimated from APRA dispute volumes relative to decline volumes. "
+            "Not directly published — this is a derived assumption. <span style='color:#856404;font-weight:bold;'>CONSTRUCTED</span></td></tr>"
+            "<tr><td style='color:#555;padding:2px 0;'><strong>Payment probability default (67%)</strong></td>"
+            "<td style='color:#444;'>From APRA outcomes data, Jun 2025: 33.2% of resolved DII disputes resulted in "
+            "original decision maintained — so 66.8% resulted in some payment (reversal or settlement). "
+            "<span style='color:#155724;font-weight:bold;'>APRA DATA</span></td></tr>"
+            "<tr><td style='color:#555;padding:2px 0;'><strong>Average payment ($25,000)</strong></td>"
+            "<td style='color:#444;'>Illustrative only. AFCA does not publish average payment amounts by product. "
+            "Intended to represent a partial benefit payment, not a full claim. "
+            "<span style='color:#856404;font-weight:bold;'>ILLUSTRATIVE</span></td></tr>"
+            "<tr><td style='color:#555;padding:2px 0;'><strong>Formula</strong></td>"
+            "<td style='color:#444;'>LIC = claims received × decline rate × dispute rate × payment probability × avg payment</td></tr>"
+            "</table></div>",
+            unsafe_allow_html=True
+        )
+
         calc_col, result_col = st.columns([2, 1])
 
         with calc_col:
@@ -826,9 +872,20 @@ def main():
         st.markdown("---")
         st.markdown("### Quarterly signal dashboard — illustrative current status")
         st.markdown(
-            "<div style='font-size:0.82em;color:#666;margin-bottom:12px;'>"
-            "This is what the quarterly one-page summary looks like for the Risk Committee. "
-            "Each signal has a named owner and a predefined action threshold.</div>",
+            "<div style='background:#EBF5FB;border-left:4px solid #2980B9;"
+            "padding:14px 16px;border-radius:4px;margin-bottom:14px;font-size:0.85em;line-height:1.7;'>"
+            "<strong>What this shows:</strong> Rather than presenting a detailed technical report to "
+            "the board each quarter, the actuary condenses the three monitoring signals into a single "
+            "one-page view — each signal at a different point in time, each owned by a named person.<br><br>"
+            "<strong>Leading signal (complaints):</strong> What the data is telling us now, "
+            "approximately 12 months before it appears in published statistics.<br>"
+            "<strong>Current signal (disputes):</strong> What has already arrived — the published "
+            "APRA dispute rate for the most recent half-year.<br>"
+            "<strong>Lagging signal (LIC):</strong> Whether the IFRS 17 reserve has been updated "
+            "to reflect what we now know. This is the actuary's owned output.<br><br>"
+            "Signal status below is calculated from the actual data in this tool — not illustrative values. "
+            "Thresholds: amber = &gt;10% increase in complaints or &gt;5% change in dispute rate; "
+            "LIC held at amber while dispute rate remains elevated above 7-year average.</div>",
             unsafe_allow_html=True
         )
 
