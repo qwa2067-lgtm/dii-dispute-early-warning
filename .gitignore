@@ -1,0 +1,17 @@
+# APRA source data files (large Excel files — not committed)
+*.xlsx
+*.xls
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Environment
+.env
+venv/
+.venv/
+
+# macOS
+.DS_Store

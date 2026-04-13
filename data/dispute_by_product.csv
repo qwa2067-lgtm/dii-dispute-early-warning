@@ -1,0 +1,8 @@
+product,ind_advised,ind_non_advised,grp_super,grp_ordinary
+Death,13.0,22.0,1.0,4.0
+TPD,99.0,70.0,30.0,5.0
+Trauma,61.0,28.0,,83.0
+DII,289.0,429.0,68.0,46.0
+CCI,,9.0,,
+Funeral,,46.0,,
+Accident,48.0,22.0,,
