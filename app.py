@@ -371,25 +371,30 @@ def main():
         with col_context:
             st.markdown("**Why the Non-Advised channel has higher dispute rates**")
             st.markdown(
-                "<div style='font-size:0.83em;color:#888;margin-bottom:8px;font-style:italic;'>"
-                "Factors cited in ASIC's August 2025 Dear CEO letter and AFCA annual reports on "
-                "life insurance complaints. Not ranked — APRA data does not disclose root cause.</div>",
+                "<div style='font-size:0.83em;color:#888;margin-bottom:10px;font-style:italic;'>"
+                "Three reasons cited in official sources — APRA statistics, ASIC REP 587 (2018), "
+                "and ASIC's August 2025 Dear CEO letter.</div>",
                 unsafe_allow_html=True
             )
             st.markdown(
                 "<div style='font-size:0.85em;line-height:1.7;'>"
-                "<div style='margin-bottom:8px;'><strong>No advice at point of sale.</strong> "
-                "Customers self-select into DII without a financial adviser assessing suitability. "
-                "When a claim is declined, there is no adviser to help interpret the policy terms — "
-                "the customer goes directly to AFCA.</div>"
-                "<div style='margin-bottom:8px;'><strong>Anti-selection risk.</strong> "
-                "Without adviser-led needs assessment, the direct channel may attract customers "
-                "whose circumstances are a higher mismatch to the product — increasing the "
-                "likelihood of disputes when expectations are not met at claim time.</div>"
-                "<div><strong>Policy definition complexity.</strong> "
-                "ASIC's review found that policy terms — particularly 'unable to work' definitions "
-                "in DII — are frequently misunderstood by customers at point of sale, creating "
-                "definitional disputes at claim time.</div>"
+                "<div style='margin-bottom:10px;'><strong>1. No 'clearer expectations' from an adviser.</strong> "
+                "APRA's own commentary attributes the Non-Advised channel's lower admittance rate "
+                "(84.6% vs 95.1% for Advised) partly to the absence of an adviser — who would "
+                "otherwise clarify coverage before a claim is lodged, or discourage claims unlikely "
+                "to be covered. Without that filter, more claims are declined, and more of those "
+                "declined customers dispute. <em>(APRA Life Insurance Claims and Disputes Statistics)</em></div>"
+                "<div style='margin-bottom:10px;'><strong>2. Inadequate disclosure at point of sale.</strong> "
+                "ASIC found that direct life insurers frequently failed to adequately disclose key "
+                "exclusions, waiting periods, and benefit limits at the time of sale. When customers "
+                "later discover coverage gaps, disputes follow. "
+                "<em>(ASIC REP 587, 2018; ASIC Dear CEO letter, August 2025)</em></div>"
+                "<div><strong>3. Sales incentive structures misaligned with customer outcomes.</strong> "
+                "ASIC found that over half of direct insurers had bonus schemes that prioritised "
+                "closing the sale over customer needs — including pressure-selling tactics. "
+                "Policies sold without genuine suitability assessment are more likely to produce "
+                "claims disputes when customer expectations are not met. "
+                "<em>(ASIC REP 587, 2018)</em></div>"
                 "</div>",
                 unsafe_allow_html=True
             )
