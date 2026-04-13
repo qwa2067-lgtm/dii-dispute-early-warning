@@ -270,10 +270,9 @@ def main():
             "**Who this is for:** This is a cross-functional tool. Each tab is designed to be read "
             "by actuaries, risk managers, operations teams, and legal counsel — without requiring "
             "specialised actuarial knowledge to understand the signal.\n\n"
-            "**Data sources:** APRA publishes life insurance claims and disputes statistics as open data "
-            "— free to use with attribution under a Creative Commons licence (CC BY 3.0 AU). "
-            "This means the dispute rates, claims volumes, and product comparisons shown here are "
-            "drawn directly from the official APRA publication. "
+            "**Data sources:** APRA publishes life insurance claims and disputes statistics as open data. "
+            "The dispute rates, claims volumes, and product comparisons shown here are drawn directly "
+            "from the official APRA publication. "
             "The internal complaints series does not exist as public data — it is held by each insurer "
             "and is not disclosed. For this tool, it has been synthetically constructed to demonstrate "
             "the methodology. Any insurer can substitute their own complaints data to run the same analysis. "
@@ -284,8 +283,8 @@ def main():
 
     with st.expander("⚠️ Disclaimer", expanded=False):
         st.markdown(
-            "This tool uses publicly available APRA statistics (Creative Commons CC BY 3.0 AU) "
-            "and a synthetic complaints series constructed for illustration purposes. "
+            "This tool uses publicly available APRA statistics and a synthetic complaints series "
+            "constructed for illustration purposes. "
             "It does not contain data from any specific insurer. "
             "The IFRS 17 reserve calculations are illustrative only and do not constitute "
             "actuarial advice. All assumptions are documented and clearly disclosed.\n\n"
@@ -304,7 +303,7 @@ def main():
     # ── TAB 1: THE PROBLEM ─────────────────────────────────────────────────────
     with tab1:
         section_header(
-            "Why are DII direct-sale customers disputing their claims at three times the rate of seven years ago?",
+            "Non-advised / direct-sale DII has a dispute problem — and it has been getting worse for seven years.",
             "Understanding the scale and trajectory of the problem — context for every team in the room."
         )
 
@@ -321,7 +320,7 @@ def main():
                 "DII Non-Advised dispute rate today",
                 f"{latest_rate:.0f}",
                 "disputes per 100,000 lives · Jun 2025",
-                COLOURS["danger"]
+                COLOURS["neutral"]
             ), unsafe_allow_html=True)
         with m2:
             st.markdown(metric_card(
@@ -335,15 +334,32 @@ def main():
                 "Peak rate observed",
                 f"{peak_rate:.0f}",
                 f"disputes per 100,000 lives · {peak_label}",
-                COLOURS["danger"]
+                COLOURS["neutral"]
             ), unsafe_allow_html=True)
         with m4:
             st.markdown(metric_card(
                 "Change over 7 years",
                 f"+{ratio_change:.1f}×",
                 "structural increase, not a blip",
-                COLOURS["warning"]
+                COLOURS["neutral"]
             ), unsafe_allow_html=True)
+
+        # ── ASIC context — moved to top as the driver of this tool ──────────
+        st.markdown(
+            "<div style='background:#FFF3CD;border-left:4px solid #E67E22;"
+            "padding:14px 16px;border-radius:4px;font-size:0.88em;margin-bottom:20px;'>"
+            "<strong>ASIC Dear CEO letter — August 2025:</strong> "
+            "ASIC's review of direct life insurance sales found that claims disputes have "
+            "<strong>more than doubled since 2018</strong> across all channels. "
+            "Companies were found to have limited information sharing about complaints "
+            "between internal teams — with insufficient standards for analysing complaint "
+            "trends and root causes. "
+            "<br><br>"
+            "This tool exists because that gap — between the complaints signal and the "
+            "actuarial and financial consequence — is exactly what ASIC is asking boards to close."
+            "</div>",
+            unsafe_allow_html=True
+        )
 
         st.markdown("---")
 
@@ -362,38 +378,33 @@ def main():
                 {"Disputes per 100,000 lives": (labels, rates, COLOURS["disputes"])},
                 title="",
                 y_label="Disputes / 100k lives",
-                width=480, height=240,
+                width=620, height=260,
                 show_legend=False,
                 annotations=[(peak_idx, peak_rate, f"Peak: {peak_rate:.0f}", COLOURS["danger"])]
             )
             st.markdown(chart, unsafe_allow_html=True)
 
         with col_context:
-            st.markdown("**Why the Non-Advised channel has higher dispute rates**")
+            st.markdown("**Why does the direct-sale channel have more disputes?**")
             st.markdown(
                 "<div style='font-size:0.83em;color:#888;margin-bottom:10px;font-style:italic;'>"
-                "Three reasons cited in official sources — APRA statistics, ASIC REP 587 (2018), "
-                "and ASIC's August 2025 Dear CEO letter.</div>",
+                "Three reasons from official sources.</div>",
                 unsafe_allow_html=True
             )
             st.markdown(
-                "<div style='font-size:0.85em;line-height:1.7;'>"
-                "<div style='margin-bottom:10px;'><strong>1. No 'clearer expectations' from an adviser.</strong> "
-                "APRA's own commentary attributes the Non-Advised channel's lower admittance rate "
-                "(84.6% vs 95.1% for Advised) partly to the absence of an adviser — who would "
-                "otherwise clarify coverage before a claim is lodged, or discourage claims unlikely "
-                "to be covered. Without that filter, more claims are declined, and more of those "
-                "declined customers dispute. <em>(APRA Life Insurance Claims and Disputes Statistics)</em></div>"
-                "<div style='margin-bottom:10px;'><strong>2. Inadequate disclosure at point of sale.</strong> "
-                "ASIC found that direct life insurers frequently failed to adequately disclose key "
-                "exclusions, waiting periods, and benefit limits at the time of sale. When customers "
-                "later discover coverage gaps, disputes follow. "
-                "<em>(ASIC REP 587, 2018; ASIC Dear CEO letter, August 2025)</em></div>"
-                "<div><strong>3. Sales incentive structures misaligned with customer outcomes.</strong> "
-                "ASIC found that over half of direct insurers had bonus schemes that prioritised "
-                "closing the sale over customer needs — including pressure-selling tactics. "
-                "Policies sold without genuine suitability assessment are more likely to produce "
-                "claims disputes when customer expectations are not met. "
+                "<div style='font-size:0.85em;line-height:1.8;'>"
+                "<div style='margin-bottom:10px;'><strong>1. No adviser to set expectations.</strong> "
+                "In the direct channel, no one checks whether a policy suits the customer before they buy. "
+                "When a claim is declined, the customer is often surprised — and disputes. "
+                "Claim admittance is 84.6% in direct vs 95.1% in advised. "
+                "<em>(APRA Claims and Disputes Statistics)</em></div>"
+                "<div style='margin-bottom:10px;'><strong>2. Poor disclosure at point of sale.</strong> "
+                "ASIC found direct insurers regularly failed to explain key exclusions and benefit limits clearly. "
+                "Customers who didn't understand what they bought dispute when it doesn't pay out. "
+                "<em>(ASIC REP 587, 2018; ASIC Dear CEO letter, 2025)</em></div>"
+                "<div><strong>3. Sales incentives that prioritised closing the sale.</strong> "
+                "Over half of direct insurers had bonus schemes rewarding sales volume over customer suitability. "
+                "Unsuitable policies sold under pressure are more likely to end in a dispute. "
                 "<em>(ASIC REP 587, 2018)</em></div>"
                 "</div>",
                 unsafe_allow_html=True
@@ -432,24 +443,6 @@ def main():
 
         st.markdown(
             f"<div style='max-width:500px;'>{bars_html}</div>",
-            unsafe_allow_html=True
-        )
-
-        st.markdown("---")
-        st.markdown("**The ASIC context**")
-        st.markdown(
-            "<div style='background:#FFF3CD;border-left:4px solid #E67E22;"
-            "padding:14px 16px;border-radius:4px;font-size:0.88em;'>"
-            "<strong>ASIC Dear CEO letter — August 2025:</strong> "
-            "ASIC's review of direct life insurance sales found that claims disputes have "
-            "<strong>more than doubled since 2018</strong> across all channels. "
-            "Companies were found to have limited information sharing about complaints "
-            "between internal teams — with insufficient standards for analysing complaint "
-            "trends and root causes. "
-            "<br><br>"
-            "This tool exists because that gap — between the complaints signal and the "
-            "actuarial and financial consequence — is exactly what ASIC is asking boards to close."
-            "</div>",
             unsafe_allow_html=True
         )
 
