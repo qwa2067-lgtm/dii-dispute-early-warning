@@ -280,7 +280,7 @@ def main():
             "the methodology. Any insurer can substitute their own complaints data to run the same analysis. "
             "Throughout the tool, APRA data is marked with a green **APRA DATA** badge and constructed "
             "or derived data with a yellow **CONSTRUCTED / DERIVED** badge.\n\n"
-            "*Built by Amy Wang (FIAA).*"
+            "*Built by Amy Wang, FIAA.*"
         )
 
     with st.expander("⚠️ Disclaimer", expanded=False):
