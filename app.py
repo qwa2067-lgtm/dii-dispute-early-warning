@@ -54,23 +54,25 @@ COLOURS = {
 @st.cache_data
 def load_data():
     dispute_trend    = pd.read_csv(DATA_FOLDER / "dispute_trend.csv",    parse_dates=["Reporting Date"])
-    claims_trend     = pd.read_csv(DATA_FOLDER / "claims_trend.csv",     parse_dates=["Reporting Date"])
     by_product       = pd.read_csv(DATA_FOLDER / "dispute_by_product.csv")
     outcomes         = pd.read_csv(DATA_FOLDER / "dispute_outcomes.csv")
     complaints_detail= pd.read_csv(DATA_FOLDER / "complaints_synthetic.csv", parse_dates=["date"])
     complaints_totals= pd.read_csv(DATA_FOLDER / "complaints_totals.csv",    parse_dates=["date"])
-    return dispute_trend, claims_trend, by_product, outcomes, complaints_detail, complaints_totals
+    return dispute_trend, by_product, outcomes, complaints_detail, complaints_totals
 
 
 # ── HTML helpers ───────────────────────────────────────────────────────────────
 
 def metric_card(label, value, sub="", color="#2C3E50"):
+    # color is used as a top-border accent — keeps light background for readability
+    # while preserving color differentiation on cards that need it (e.g. outcome cards)
     return (
-        f"<div style='background:{color};color:white;border-radius:8px;"
+        f"<div style='background:#F2F3F4;color:#2C3E50;border-radius:8px;"
+        f"border:1px solid #D5D8DC;border-top:3px solid {color};"
         f"padding:14px 16px;text-align:center;margin-bottom:8px;'>"
         f"<div style='font-size:2em;font-weight:bold;'>{value}</div>"
-        f"<div style='font-size:0.78em;margin-top:4px;opacity:0.85;'>{sub}</div>"
-        f"<div style='font-size:0.75em;margin-top:8px;font-weight:bold;'>{label}</div>"
+        f"<div style='font-size:0.78em;margin-top:4px;color:#5D6D7E;'>{sub}</div>"
+        f"<div style='font-size:0.75em;margin-top:8px;font-weight:bold;color:#5D6D7E;'>{label}</div>"
         f"</div>"
     )
 
@@ -113,7 +115,7 @@ def synthetic_badge():
     return (
         "<span style='background:#FFF3CD;color:#856404;border:1px solid #FFEAA7;"
         "border-radius:4px;padding:2px 8px;font-size:0.72em;font-weight:bold;"
-        "margin-left:8px;'>CONSTRUCTED DATA</span>"
+        "margin-left:8px;'>CONSTRUCTED / DERIVED</span>"
     )
 
 
@@ -277,7 +279,7 @@ def main():
             "and is not disclosed. For this tool, it has been synthetically constructed to demonstrate "
             "the methodology. Any insurer can substitute their own complaints data to run the same analysis. "
             "Throughout the tool, APRA data is marked with a green **APRA DATA** badge and constructed "
-            "data with a yellow **CONSTRUCTED DATA** badge.\n\n"
+            "or derived data with a yellow **CONSTRUCTED / DERIVED** badge.\n\n"
             "*Built by Amy Wang (FIAA).*"
         )
 
@@ -291,7 +293,7 @@ def main():
             "APRA source: *Life Insurance Claims and Disputes Statistics*, June 2025."
         )
 
-    dispute_trend, claims_trend, by_product, outcomes, complaints_detail, complaints_totals = load_data()
+    dispute_trend, by_product, outcomes, complaints_detail, complaints_totals = load_data()
 
     tab1, tab2, tab3, tab4 = st.tabs([
         "📋 The Problem",
@@ -405,7 +407,7 @@ def main():
                 "<div><strong>3. Sales incentives that prioritised closing the sale.</strong> "
                 "Over half of direct insurers had bonus schemes rewarding sales volume over customer suitability. "
                 "Unsuitable policies sold under pressure are more likely to end in a dispute. "
-                "<em>(ASIC REP 587, 2018)</em></div>"
+                "<em>(ASIC REP 587, 2018 — the structural issue persists, as confirmed by ASIC's 2025 review)</em></div>"
                 "</div>",
                 unsafe_allow_html=True
             )
@@ -425,9 +427,7 @@ def main():
             unsafe_allow_html=True
         )
 
-        dii_row    = by_product[by_product['product'] == 'DII']
-        dii_rate   = float(dii_row['ind_non_advised'].values[0]) if not dii_row.empty else 429
-        max_rate   = by_product['ind_non_advised'].dropna().max()
+        max_rate = by_product['ind_non_advised'].dropna().max()
 
         bars_html = ""
         product_order = ['DII', 'Funeral', 'TPD', 'Trauma', 'Death', 'Accident', 'CCI']
@@ -470,7 +470,9 @@ def main():
         comp = complaints_totals[['date', 'total_complaints']].copy()
         comp = comp.rename(columns={'date': 'Reporting Date'})
 
-        merged = disp.merge(comp, on='Reporting Date', how='outer').sort_values('Reporting Date')
+        merged = (disp.merge(comp, on='Reporting Date', how='outer')
+                  .sort_values('Reporting Date')
+                  .reset_index(drop=True))
         merged['year_label'] = merged['Reporting Date'].dt.strftime('%b %Y')
 
         # Normalise both series to index (Jun 2018 = 100) for comparison
@@ -491,13 +493,13 @@ def main():
         d_idx  = merged['dispute_index'].tolist()
         c_idx  = merged['complaint_index'].tolist()
 
-        peak_d_idx = merged['dispute_index'].idxmax() - merged.index[0]
-        peak_c_idx = merged['complaint_index'].idxmax() - merged.index[0]
+        peak_d_idx = int(merged['dispute_index'].idxmax())
+        peak_c_idx = int(merged['complaint_index'].idxmax())
 
         chart = svg_line_chart(
             {
-                f"Complaints (constructed — 12 month lead)": (labels, c_idx, COLOURS["complaints"]),
-                f"Disputes (APRA — published data)":         (labels, d_idx, COLOURS["disputes"]),
+                "Complaints (constructed — 12 month lead)": (labels, c_idx, COLOURS["complaints"]),
+                "Disputes (APRA — published data)":         (labels, d_idx, COLOURS["disputes"]),
             },
             title="Complaints vs Disputes — Indexed to Jun 2018 = 100",
             y_label="Index (Jun 2018 = 100)",
@@ -524,6 +526,12 @@ def main():
             "The Dec 2020 complaints spike was visible internally — but the corresponding "
             "Dec 2021 dispute spike only appeared in published APRA data a year later. "
             "By that point, the underlying conduct issues were already 12–18 months old."
+            "<br><br>"
+            "<strong>Important:</strong> The complaints series in this chart is synthetic — "
+            "constructed to demonstrate what a 12-month lead relationship would look like. "
+            "The lead is the modelling assumption, not an empirically observed finding from this data. "
+            "An insurer substituting their own complaints data may find a different lead time. "
+            "See <em>How was the complaints series constructed?</em> below for full methodology."
             "</div>",
             unsafe_allow_html=True
         )
@@ -729,33 +737,22 @@ def main():
         st.markdown(
             "_Adjust the sliders to reflect your portfolio assumptions. "
             "The calculator shows the probability-weighted additional liability "
-            "per 1,000 DII claims received._"
+            "per 1,000 DII claims received._\n\n"
+            "**Formula:** Additional LIC = claims received × decline rate × dispute rate × payment probability × average payment"
         )
 
-        st.markdown(
-            "<div style='background:#F8F9FA;border:1px solid #dee2e6;border-radius:6px;"
-            "padding:14px 16px;margin-bottom:16px;font-size:0.83em;line-height:1.7;'>"
-            "<strong>Calculator assumptions and data sources</strong><br>"
-            "<table style='width:100%;border-collapse:collapse;margin-top:8px;'>"
-            "<tr><td style='width:40%;color:#555;padding:2px 0;'><strong>Decline rate default (12%)</strong></td>"
-            "<td style='color:#444;'>APRA claims data, DII Non-Advised, Jun 2025: ~11.5% of claims received were declined. "
-            "Rounded to 12% as base. <span style='color:#155724;font-weight:bold;'>APRA DATA</span></td></tr>"
-            "<tr><td style='color:#555;padding:2px 0;'><strong>Dispute rate default (40%)</strong></td>"
-            "<td style='color:#444;'>Estimated from APRA dispute volumes relative to decline volumes. "
-            "Not directly published — derived from APRA dispute volumes relative to decline volumes. <span style='color:#856404;font-weight:bold;'>DERIVED</span></td></tr>"
-            "<tr><td style='color:#555;padding:2px 0;'><strong>Payment probability default (67%)</strong></td>"
-            "<td style='color:#444;'>From APRA outcomes data, Jun 2025: 33.2% of resolved DII disputes resulted in "
-            "original decision maintained — so 66.8% resulted in some payment (reversal or settlement). "
-            "<span style='color:#155724;font-weight:bold;'>APRA DATA</span></td></tr>"
-            "<tr><td style='color:#555;padding:2px 0;'><strong>Average payment ($25,000)</strong></td>"
-            "<td style='color:#444;'>Illustrative only. AFCA does not publish average payment amounts by product. "
-            "Intended to represent a partial benefit payment, not a full claim. "
-            "<span style='color:#856404;font-weight:bold;'>ILLUSTRATIVE</span></td></tr>"
-            "<tr><td style='color:#555;padding:2px 0;'><strong>Formula</strong></td>"
-            "<td style='color:#444;'>LIC = claims received × decline rate × dispute rate × payment probability × avg payment</td></tr>"
-            "</table></div>",
-            unsafe_allow_html=True
-        )
+        with st.expander("Calculator assumptions and data sources"):
+            st.markdown(
+                "| Assumption | Default | Basis |\n"
+                "|---|---|---|\n"
+                "| Decline rate (12%) | 12% | APRA claims data, DII Non-Advised, Jun 2025: ~11.5% of claims received were declined. Rounded to 12% as base. **APRA DATA** |\n"
+                "| Dispute rate (40%) | 40% | Estimated from APRA dispute volumes relative to decline volumes. Not directly published — derived from available APRA data. **CONSTRUCTED / DERIVED** |\n"
+                "| Payment probability (67%) | 67% | From APRA outcomes data, Jun 2025: 33.2% of resolved DII disputes resulted in original decision maintained — so 66.8% resulted in some payment (reversal or settlement). **APRA DATA** |\n"
+                "| Average payment ($25,000) | $25,000 | Illustrative only. AFCA does not publish average payment amounts by product. Intended to represent a partial benefit payment, not a full claim. **ILLUSTRATIVE** |\n\n"
+                "**Note on IFRS 17 scope:** This calculator shows a simplified probability-weighted expected value. "
+                "A full IFRS 17 LIC calculation would also require discounting future cash flows and adding a risk adjustment. "
+                "The purpose here is to illustrate order of magnitude, not to replace an actuarial valuation."
+            )
 
         calc_col, result_col = st.columns([2, 1])
 
@@ -820,8 +817,8 @@ def main():
              "and AFCA levy per complaint. For a large DII direct portfolio, "
              "this is a material operating cost line — and it scales with dispute volume."),
             ("#2980B9", "Regulatory and reputational risk",
-             "ASIC has explicitly stated that the steps taken in responding to their "
-             "August 2025 observations will inform enforcement action. "
+             "ASIC's August 2025 letter to CEOs makes clear that how boards respond "
+             "to these findings will be a factor in future supervisory engagement. "
              "A documented early warning framework is evidence of governance — "
              "its absence is evidence of the opposite."),
         ]
@@ -858,18 +855,25 @@ def main():
         st.markdown("### The connected monitoring framework")
         st.markdown(
             "ASIC's observation is that data exists but is not shared or connected. "
-            "Below is what a better practice framework looks like — and what role each team plays."
+            "Below is what a better practice framework looks like — and what role each team plays.\n\n"
+            "**Governance cadence:** Monthly data feed (Operations → Actuarial) → "
+            "Quarterly actuarial review → Quarterly Risk Committee sighting → "
+            "Annual board-level trend review. "
+            "A named owner at each stage; escalation path defined in advance, not improvised."
         )
 
         framework_items = [
             ("#E67E22", "01", "Collect", "Complaints Team / Operations",
              "Every internal complaint is logged with: date, product, channel, complaint category, "
              "and resolution outcome. Not just volume — categorised, so trends by type are visible. "
+             "Resolution outcome is often the hardest field to capture consistently — "
+             "but it is the field that enables the IFRS 17 connection. "
              "The ASIC standard (RG 271) requires firms to enable staff to escalate systemic issues. "
              "This only works if the data exists in usable form."),
             ("#F39C12", "02", "Connect", "Actuarial",
-             "Monthly: the actuary receives complaints data from operations and overlays it on "
-             "the APRA dispute trend. The 12-month lead relationship is monitored. "
+             "At minimum quarterly — monthly where possible — the actuary receives complaints data "
+             "from operations and overlays it on the APRA dispute trend. "
+             "The 12-month lead relationship is monitored. "
              "When the complaint trend diverges upward from the historical pattern, a flag is raised. "
              "This is the connection ASIC found missing — complaints data not reaching actuarial."),
             ("#C0392B", "03", "Monitor", "Risk / Board",
@@ -915,14 +919,17 @@ def main():
             "<strong>Lagging signal (LIC):</strong> Whether the IFRS 17 reserve has been updated "
             "to reflect what we now know. This is the actuary's owned output.<br><br>"
             "Signal status below is calculated from the actual data in this tool — not illustrative values. "
-            "Thresholds: amber = &gt;10% increase in complaints or &gt;5% change in dispute rate; "
-            "LIC held at amber while dispute rate remains elevated above 7-year average.</div>",
+            "Thresholds: amber = &gt;10% increase in complaints or &gt;5% change in dispute rate. "
+            "These thresholds are illustrative — each firm would calibrate to their own portfolio history "
+            "and risk appetite. "
+            "LIC status is held at amber as a standing judgement while the dispute rate remains elevated.</div>",
             unsafe_allow_html=True
         )
 
-        latest_rate = dispute_trend['dispute_rate_per_100k'].iloc[-1]
-        prev_rate   = dispute_trend['dispute_rate_per_100k'].iloc[-3]
-        rate_change = (latest_rate - prev_rate) / prev_rate
+        latest_rate  = dispute_trend['dispute_rate_per_100k'].iloc[-1]
+        prev_rate    = dispute_trend['dispute_rate_per_100k'].iloc[-3]
+        rate_change  = (latest_rate - prev_rate) / prev_rate
+        avg_7yr_rate = dispute_trend['dispute_rate_per_100k'].mean()
 
         latest_comp  = complaints_totals['total_complaints'].iloc[-1]
         prev_comp    = complaints_totals['total_complaints'].iloc[-3]
@@ -950,6 +957,9 @@ def main():
 
         comp_status = "amber" if comp_change > 0.1 else "green"
         disp_status = "amber" if rate_change > 0.05 else "green" if rate_change < -0.05 else "amber"
+        # LIC status is a standing judgement, not calculated — held at amber while
+        # dispute rate remains elevated. Each firm's actuary would set this based on
+        # whether the probability weight in their LIC has been reviewed and updated.
         lic_status  = "amber"
 
         tl1, tl2, tl3 = st.columns(3)
@@ -972,7 +982,7 @@ def main():
                     "Dispute Rate (Current — APRA)",
                     f"{latest_rate:.0f} / 100k lives",
                     f"{'↑' if rate_change > 0 else '↓'} {abs(rate_change):.0%} vs 12 months ago. "
-                    f"Above 7-year average of 285.",
+                    f"{'Above' if latest_rate > avg_7yr_rate else 'Below'} series average of {avg_7yr_rate:.0f}.",
                     "Actuarial / Risk"
                 ),
                 unsafe_allow_html=True
@@ -984,7 +994,9 @@ def main():
                     "LIC Adequacy (Lagging — IFRS 17)",
                     "Probability weight: 67%",
                     "Disputed-claim LIC probability weight last reviewed Q2 2025. "
-                    "Recommend quarterly review while dispute rate elevated.",
+                    "Held at amber as a standing recommendation while dispute rate remains elevated — "
+                    "not a calculated output. Each actuary would set this based on whether "
+                    "the probability weight in their LIC has been reviewed and updated.",
                     "Appointed Actuary"
                 ),
                 unsafe_allow_html=True
