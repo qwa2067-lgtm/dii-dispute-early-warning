@@ -528,6 +528,27 @@ def main():
             unsafe_allow_html=True
         )
 
+        with st.expander("How was the complaints series constructed?"):
+            st.markdown(
+                "Internal complaints data is not publicly available — each insurer holds its own. "
+                "For this tool, a synthetic series has been constructed working backwards from "
+                "the real APRA dispute data. The method is documented below so it can be "
+                "replicated or replaced with real data.\n\n"
+                "**Formula**\n\n"
+                "Complaints(t) ≈ Dispute rate(t + 2 periods) ÷ Conversion rate + noise\n\n"
+                "| Assumption | Value | Basis |\n"
+                "|---|---|---|\n"
+                "| Complaint-to-dispute conversion rate | 18% | AFCA annual reports indicate ~15–20% of insurance complaints escalate to a formal AFCA dispute. 18% is the midpoint. |\n"
+                "| Lead time | 2 half-year periods (12 months) | Based on ASIC RG 271 IDR requirements (45-day resolution window) and observed AFCA escalation patterns. |\n"
+                "| Multiplicative noise | ±8% standard deviation | Added so the series reflects realistic variability rather than a mechanical transformation. |\n"
+                "| Category weights | Claim declined 40%, Claim delay 25%, Amount in dispute 15%, Policy terms 10%, Sales conduct 10% | Estimated from AFCA published complaint category data for life insurance. AFCA does not publish DII-specific splits by channel. |\n\n"
+                "**What this means in practice**\n\n"
+                "The complaints series is not arbitrary — it is analytically consistent with the real "
+                "dispute data. The Dec 2020 complaints spike, for example, is constructed to lead the "
+                "real Dec 2021 dispute spike by exactly 12 months. Any insurer can substitute their "
+                "own complaints data and run the same analysis without changing any other part of the tool."
+            )
+
         st.markdown("---")
 
         col_cat, col_action = st.columns([3, 2])
