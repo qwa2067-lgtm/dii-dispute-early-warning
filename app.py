@@ -716,11 +716,11 @@ def main():
             "When a DII claim is declined, it does not disappear from the liability picture. "
             "If historical data shows that 67% of disputed declined claims ultimately result "
             "in some payment, then a probability-weighted portion of the declined-claim population "
-            "represents an <em>incurred but not yet recognised liability</em>.<br><br>"
-            "An actuary who models the LIC using only admitted claims — without probability-weighting "
-            "the disputed population — is <strong>overstating the CSM and understating the LIC</strong>. "
-            "The error is silent until AFCA decisions start coming in, at which point it is "
-            "too late to avoid the reserve strengthening."
+            "should be recognised in the LIC — even though the claim has been declined.<br><br>"
+            "An actuary who measures the LIC using only admitted claims — without probability-weighting "
+            "the disputed population — is <strong>understating the LIC</strong>. "
+            "The error is silent until AFCA decisions start coming in, at which point the reserve "
+            "must be strengthened, creating earnings volatility under IFRS 17."
             "</div>",
             unsafe_allow_html=True
         )
@@ -742,7 +742,7 @@ def main():
             "Rounded to 12% as base. <span style='color:#155724;font-weight:bold;'>APRA DATA</span></td></tr>"
             "<tr><td style='color:#555;padding:2px 0;'><strong>Dispute rate default (40%)</strong></td>"
             "<td style='color:#444;'>Estimated from APRA dispute volumes relative to decline volumes. "
-            "Not directly published — this is a derived assumption. <span style='color:#856404;font-weight:bold;'>CONSTRUCTED</span></td></tr>"
+            "Not directly published — derived from APRA dispute volumes relative to decline volumes. <span style='color:#856404;font-weight:bold;'>DERIVED</span></td></tr>"
             "<tr><td style='color:#555;padding:2px 0;'><strong>Payment probability default (67%)</strong></td>"
             "<td style='color:#444;'>From APRA outcomes data, Jun 2025: 33.2% of resolved DII disputes resulted in "
             "original decision maintained — so 66.8% resulted in some payment (reversal or settlement). "
