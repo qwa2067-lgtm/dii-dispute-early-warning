@@ -455,9 +455,9 @@ def main():
 
         st.markdown(
             f"<div style='margin-bottom:4px;'>"
-            + audience_tag("Risk", "#8E44AD")
             + audience_tag("Operations", "#2980B9")
-            + audience_tag("Complaints Team", "#E67E22")
+            + audience_tag("Risk", "#8E44AD")
+            + audience_tag("Legal", "#2980B9")
             + audience_tag("Actuarial", "#C0392B")
             + "</div>",
             unsafe_allow_html=True
