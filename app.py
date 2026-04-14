@@ -608,19 +608,19 @@ def main():
         )
 
         steps = [
-            ("📊", "Complaints rise", "Internal data, visible now", "#E67E22"),
-            ("⏱️", "+6 months", "IDR process fails, AFCA contacted", "#7F8C8D"),
-            ("⚖️", "+12 months", "Dispute lodged, APRA records it", "#C0392B"),
-            ("📉", "+18 months", "IFRS 17 LIC impact crystallises", "#2C3E50"),
+            ("📊", "Complaints rise", "Internal data, visible now"),
+            ("⏱️", "+6 months", "IDR process fails, AFCA contacted"),
+            ("⚖️", "+12 months", "Dispute lodged, APRA records it"),
+            ("📉", "+18 months", "IFRS 17 LIC impact crystallises"),
         ]
         s_cols = st.columns(4)
-        for col, (icon, title, sub, color) in zip(s_cols, steps):
+        for col, (icon, title, sub) in zip(s_cols, steps):
             with col:
                 st.markdown(
                     f"<div style='text-align:center;padding:12px;background:#f8f9fa;"
-                    f"border-radius:8px;border-top:3px solid {color};'>"
+                    f"border-radius:8px;border-top:3px solid #2C3E50;'>"
                     f"<div style='font-size:1.6em;'>{icon}</div>"
-                    f"<div style='font-weight:bold;font-size:0.85em;margin-top:6px;color:{color};'>{title}</div>"
+                    f"<div style='font-weight:bold;font-size:0.85em;margin-top:6px;color:#2C3E50;'>{title}</div>"
                     f"<div style='font-size:0.78em;color:#666;margin-top:4px;'>{sub}</div>"
                     f"</div>",
                     unsafe_allow_html=True
