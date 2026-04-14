@@ -463,18 +463,6 @@ def main():
             unsafe_allow_html=True
         )
 
-        st.markdown(
-            "<div style='background:#F2F3F4;border-left:4px solid #2C3E50;"
-            "padding:12px 16px;border-radius:4px;font-size:0.86em;margin-top:10px;margin-bottom:4px;'>"
-            "<strong>The actuary's role here is connective, not directive.</strong> "
-            "Complaints data sits with operations and risk — they see it first. "
-            "The actuary's job is to read that data alongside those teams, translate the trend into "
-            "a financial consequence, and make the cost of inaction visible to the business. "
-            "That translation — from complaints volume to IFRS 17 LIC implication — is what this tab demonstrates. "
-            "The operational response (staff training, process fixes, product review) remains with the teams that own it."
-            "</div>",
-            unsafe_allow_html=True
-        )
         st.markdown("")
 
         # Merge complaints and disputes for the chart
