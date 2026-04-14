@@ -462,6 +462,19 @@ def main():
             + "</div>",
             unsafe_allow_html=True
         )
+
+        st.markdown(
+            "<div style='background:#F2F3F4;border-left:4px solid #2C3E50;"
+            "padding:12px 16px;border-radius:4px;font-size:0.86em;margin-top:10px;margin-bottom:4px;'>"
+            "<strong>The actuary's role here is connective, not directive.</strong> "
+            "Complaints data sits with operations and risk — they see it first. "
+            "The actuary's job is to read that data alongside those teams, translate the trend into "
+            "a financial consequence, and make the cost of inaction visible to the business. "
+            "That translation — from complaints volume to IFRS 17 LIC implication — is what this tab demonstrates. "
+            "The operational response (staff training, process fixes, product review) remains with the teams that own it."
+            "</div>",
+            unsafe_allow_html=True
+        )
         st.markdown("")
 
         # Merge complaints and disputes for the chart
@@ -580,8 +593,10 @@ def main():
                  "Each complaint that escalates to AFCA carries legal and reputational cost. "
                  "Complaint trends 12 months out give legal time to prepare, not react."),
                 ("#C0392B", "Actuarial",
-                 "Complaint trends are your 12-month forward view of dispute rates — "
-                 "which feed directly into your IFRS 17 LIC assumptions. See Tab 3."),
+                 "You are not the owner of complaints data — operations is. "
+                 "Your role is to pull it, connect it to dispute trends, and translate the pattern "
+                 "into an IFRS 17 LIC implication. That translation is what makes the signal actionable "
+                 "for the business. See Tab 3."),
             ]
             for color, team, text in audience_items:
                 st.markdown(
@@ -592,7 +607,17 @@ def main():
                 )
 
         st.markdown("---")
-        st.markdown("**The 12-month early warning — what it enables**")
+        st.markdown("**Illustrative timeline — the journey from complaint to reserve impact**")
+        st.markdown(
+            "<div style='font-size:0.82em;color:#666;margin-bottom:12px;'>"
+            "This timeline is illustrative. The 12-month lead is a documented assumption based on "
+            "ASIC's RG 271 IDR requirements and observed AFCA escalation patterns — not a fixed industry rule. "
+            "Individual insurers will have different IDR resolution speeds, dispute lodgement patterns, "
+            "and reserve review cycles. The key point is directional: complaints lead disputes, "
+            "and disputes lead reserve impact. The exact timing will vary by company."
+            "</div>",
+            unsafe_allow_html=True
+        )
 
         steps = [
             ("📊", "Complaints rise", "Internal data, visible now", "#E67E22"),
